@@ -13,7 +13,7 @@ import primitives
 from turtle_simulator import TurtleSimulator
 
 
-turtle = TurtleSimulator(100)
+turtle = TurtleSimulator(200)
 
 pset = gp.PrimitiveSet('MAIN', 0)
 pset.addPrimitive(turtle.if_tower_next, 2)
@@ -24,8 +24,8 @@ pset.addTerminal(turtle.move_forward)
 pset.addTerminal(turtle.turn_left)
 pset.addTerminal(turtle.turn_right)
 
-creator.create('FitnessMax', base.Fitness, weights=(1.0, 0.3, 0.1))
-creator.create('Individual', gp.PrimitiveTree, fitness=creator.FitnessMax)
+creator.create('FitnessMulti', base.Fitness, weights=(1.0, -0.3, -0.1))
+creator.create('Individual', gp.PrimitiveTree, fitness=creator.FitnessMulti)
 
 toolbox = base.Toolbox()
 toolbox.register('expr_init', gp.genFull, pset=pset, min_=1, max_=2)
@@ -35,29 +35,29 @@ toolbox.register('population', tools.initRepeat, list, toolbox.individual)
 def evaluateTurtle(individual):
     routine = gp.compile(individual, pset)
     turtle.run(routine)
-    return 1.0 if turtle.success else 0.0, turtle.moves * 1.0 / turtle.max_moves, turtle.distance
+    return 1.0 if turtle.success else 0.0, turtle.moves, turtle.distance
 
 toolbox.register('evaluate', evaluateTurtle)
-toolbox.register('select', tools.selTournament, tournsize=7)
+toolbox.register('select', tools.selTournament, tournsize=5)
 toolbox.register('mate', gp.cxOnePoint)
 toolbox.register('expr_mut', gp.genFull, min_=0, max_=2)
 toolbox.register('mutate', gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 def main():
-    random.seed(1)
+    random.seed(3)
 
-    scenario_file = open('scenarios/towers.txt')
+    scenario_file = open('scenarios/spiral.txt')
     turtle.parse_matrix(scenario_file)
 
-    pop = toolbox.population(n=300)
+    pop = toolbox.population(n=1000)
     hof = tools.HallOfFame(1)
-    stats = tools.Statistics(lambda ind: ind.fitness.values)
+    stats = tools.Statistics(lambda ind: ind.fitness.values[1])
     stats.register('avg', numpy.mean)
     stats.register('std', numpy.std)
     stats.register('min', numpy.min)
     stats.register('max', numpy.max)
 
-    algorithms.eaSimple(pop, toolbox, 0.5, 0.2, 20, stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, 0.5, 0.2, 50, stats, halloffame=hof)
 
     return pop, hof, stats
 

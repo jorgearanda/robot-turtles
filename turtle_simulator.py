@@ -6,7 +6,7 @@ import primitives
 
 class TurtleSimulator(object):
     directions = ['north', 'east', 'south', 'west']
-    dir_row = [1, 0, -1, 0]
+    dir_row = [-1, 0, 1, 0]
     dir_col = [0, 1, 0, -1]
 
     def __init__(self, max_moves):
@@ -21,7 +21,8 @@ class TurtleSimulator(object):
         self.dir = 1
         self.moves = 0
         self.success = False
-        self.matrix = deepcopy(self.matrix)
+        self.matrix = deepcopy(self.base_matrix)
+        self.distance = self.find_distance_to_gem()
 
     @property
     def position(self):
@@ -86,7 +87,7 @@ class TurtleSimulator(object):
 
     def run(self, routine):
         self._reset()
-        while self.moves < self.max_moves:
+        while self.moves < self.max_moves and not self.success:
             routine()
 
     def parse_matrix(self, matrix):
