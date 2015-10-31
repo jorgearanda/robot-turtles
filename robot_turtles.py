@@ -80,10 +80,10 @@ if __name__ == '__main__':
     g = pgv.AGraph()
     g.add_nodes_from(nodes)
     g.add_edges_from(edges)
-    g.layout(prog="dot")
+    g.layout(prog='dot')
 
     for i in nodes:
         n = g.get_node(i)
-        n.attr["label"] = labels[i]
+        n.attr['label'] = labels[i]
 
-    g.draw("tree.pdf")
+    g.draw('tree.pdf')
