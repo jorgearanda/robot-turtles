@@ -18,11 +18,13 @@ turtle = TurtleSimulator(200)
 pset = gp.PrimitiveSet('MAIN', 0)
 pset.addPrimitive(turtle.if_tower_next, 2)
 pset.addPrimitive(turtle.if_gem_ahead, 2)
+pset.addPrimitive(turtle.if_ice_in_sight, 2)
 pset.addPrimitive(primitives.seq2, 2)
 pset.addPrimitive(primitives.seq3, 3)
 pset.addTerminal(turtle.move_forward)
 pset.addTerminal(turtle.turn_left)
 pset.addTerminal(turtle.turn_right)
+pset.addTerminal(turtle.shoot_blaster)
 
 creator.create('FitnessMulti', base.Fitness, weights=(1.0, -0.3, -0.1))
 creator.create('Individual', gp.PrimitiveTree, fitness=creator.FitnessMulti)
@@ -46,7 +48,7 @@ toolbox.register('mutate', gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 def main():
     random.seed(3)
 
-    scenario_file = open('scenarios/spiral.txt')
+    scenario_file = open('scenarios/ice_gates.txt')
     turtle.parse_matrix(scenario_file)
 
     pop = toolbox.population(n=1000)

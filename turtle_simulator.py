@@ -64,6 +64,20 @@ class TurtleSimulator(object):
                     self.success = True
                 self.distance = self.find_distance_to_gem()
 
+    def shoot_blaster(self):
+        if self.moves < self.max_moves:
+            self.moves += 1
+
+            ahead_row = self.row + self.dir_row[self.dir]
+            ahead_col = self.col + self.dir_col[self.dir]
+            while ahead_row < self.rows and ahead_row >= 0 and ahead_col < self.cols and ahead_col >= 0 and self.matrix[ahead_row][ahead_col] in ['empty', 'ice']:
+                if self.matrix[ahead_row][ahead_col] == 'ice':
+                    self.matrix[ahead_row][ahead_col] = 'empty'
+                    break
+
+                ahead_row = ahead_row + self.dir_row[self.dir]
+                ahead_col = ahead_col + self.dir_col[self.dir]
+
     def gem_ahead(self):
         ahead_row = self.row + self.dir_row[self.dir]
         ahead_col = self.col + self.dir_col[self.dir]
@@ -74,8 +88,21 @@ class TurtleSimulator(object):
             ahead_col = ahead_col + self.dir_col[self.dir]
         return False
 
+    def ice_in_sight(self):
+        ahead_row = self.row + self.dir_row[self.dir]
+        ahead_col = self.col + self.dir_col[self.dir]
+        while ahead_row < self.rows and ahead_row >= 0 and ahead_col < self.cols and ahead_col >= 0 and self.matrix[ahead_row][ahead_col] in ['empty', 'ice']:
+            if self.matrix[ahead_row][ahead_col] == 'ice':
+                return True
+            ahead_row = ahead_row + self.dir_row[self.dir]
+            ahead_col = ahead_col + self.dir_col[self.dir]
+        return False
+
     def if_gem_ahead(self, out1, out2):
         return partial(primitives.if_then_else, self.gem_ahead, out1, out2)
+
+    def if_ice_in_sight(self, out1, out2):
+        return partial(primitives.if_then_else, self.ice_in_sight, out1, out2)
 
     def tower_next(self):
         next_row = self.row + self.dir_row[self.dir]
@@ -101,6 +128,8 @@ class TurtleSimulator(object):
                     self.gem_col = j
                 elif col == 'T':
                     self.base_matrix[-1].append('tower')
+                elif col == 'I':
+                    self.base_matrix[-1].append('ice')
                 elif col == '.':
                     self.base_matrix[-1].append('empty')
                 elif col == 'S':
