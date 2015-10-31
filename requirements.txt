@@ -1,0 +1,4 @@
+deap
+docopt
+numpy
+pygraphviz
