@@ -1,17 +1,26 @@
-from copy import deepcopy
-import random
-
-import numpy
-
 from deap import algorithms
 from deap import base
 from deap import creator
 from deap import tools
 from deap import gp
+from docopt import docopt
+import numpy
+import pygraphviz as pgv
+import random
 
 import primitives
 from turtle_simulator import TurtleSimulator
 
+
+usage = """Usage: robot_turtles.py [-h] --scenario <scenario> [--population <population>] [--generations <generations>] [--seed <seed>]
+
+-h --help                                      Show this
+-d <seed>, --seed <seed>                       Random seed. [default: 3]
+-g <generations>, --generations <generations>  Number of generations to run. [default: 50]
+-p <population>, --population <population>     Population size. [default: 1000]
+-s <scenario>, --scenario <scenario>           Path to scenario file to run
+
+"""
 
 turtle = TurtleSimulator(200)
 
@@ -45,13 +54,13 @@ toolbox.register('mate', gp.cxOnePoint)
 toolbox.register('expr_mut', gp.genFull, min_=0, max_=2)
 toolbox.register('mutate', gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
-def main():
-    random.seed(3)
+def main(args):
+    random.seed(int(args.get('--seed', 3)))
 
-    scenario_file = open('scenarios/ice_gates.txt')
+    scenario_file = open(args.get('--scenario'))
     turtle.parse_matrix(scenario_file)
 
-    pop = toolbox.population(n=1000)
+    pop = toolbox.population(n=int(args.get('--population', 1000)))
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values[1])
     stats.register('avg', numpy.mean)
@@ -59,13 +68,13 @@ def main():
     stats.register('min', numpy.min)
     stats.register('max', numpy.max)
 
-    algorithms.eaSimple(pop, toolbox, 0.5, 0.2, 50, stats, halloffame=hof)
+    algorithms.eaSimple(pop, toolbox, 0.5, 0.2, int(args.get('--generations', 50)), stats, halloffame=hof)
 
     return pop, hof, stats
 
 if __name__ == '__main__':
-    import pygraphviz as pgv
-    pop, hof, stats = main()
+    args = docopt(usage, argv=None, help=True, version=None, options_first=False)
+    pop, hof, stats = main(args)
     nodes, edges, labels = gp.graph(hof[0])
 
     g = pgv.AGraph()
