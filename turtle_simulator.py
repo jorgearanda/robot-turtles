@@ -134,9 +134,6 @@ class TurtleSimulator(object):
     def if_blocked_next(self, out1, out2):
         return partial(primitives.if_then_else, self.blocked_next, out1, out2)
 
-    def if_tower_next(self, out1, out2):
-        return partial(primitives.if_then_else, self.tower_next, out1, out2)
-
     def run(self, routine):
         self._reset()
         while self.moves < self.max_moves and not self.success:
