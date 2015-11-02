@@ -62,7 +62,18 @@ class TurtleSimulator(object):
                 self.col = new_col
                 if self.matrix[self.row][self.col] == 'gem':
                     self.success = True
-                self.distance = self.find_distance_to_gem()
+            elif self.matrix[new_row][new_col] == 'box':
+                row_after_new = new_row + self.dir_row[self.dir]
+                col_after_new = new_col + self.dir_col[self.dir]
+                if row_after_new >= 0 and row_after_new < self.rows and \
+                        col_after_new >= 0 and col_after_new < self.cols and \
+                        self.matrix[row_after_new][col_after_new] == 'empty':
+                    self.matrix[row_after_new][col_after_new] = 'box'
+                    self.matrix[new_row][new_col] = 'empty'
+                    self.row = new_row
+                    self.col = new_col
+
+            self.distance = self.find_distance_to_gem()
 
     def shoot_blaster(self):
         if self.moves < self.max_moves:
@@ -104,10 +115,24 @@ class TurtleSimulator(object):
     def if_ice_in_sight(self, out1, out2):
         return partial(primitives.if_then_else, self.ice_in_sight, out1, out2)
 
-    def tower_next(self):
+    def blocked_next(self):
         next_row = self.row + self.dir_row[self.dir]
+        if next_row >= self.rows or next_row < 0: return True
         next_col = self.col + self.dir_col[self.dir]
-        return next_row >= self.rows or next_row < 0 or next_col >= self.cols or next_col < 0 or self.matrix[next_row][next_col] == 'tower'
+        if next_col >= self.cols or next_col < 0: return True
+        if self.matrix[next_row][next_col] in ['tower', 'ice']: return True
+        if self.matrix[next_row][next_col] == 'box':
+            row_after_next = next_row + self.dir_row[self.dir]
+            if row_after_next >= self.rows or row_after_next < 0: return True
+            col_after_next = next_col + self.dir_col[self.dir]
+            if col_after_next >= self.cols or col_after_next < 0: return True
+            if self.matrix[row_after_next][col_after_next] != 'empty':
+                return True
+
+        return False
+
+    def if_blocked_next(self, out1, out2):
+        return partial(primitives.if_then_else, self.blocked_next, out1, out2)
 
     def if_tower_next(self, out1, out2):
         return partial(primitives.if_then_else, self.tower_next, out1, out2)
@@ -130,6 +155,8 @@ class TurtleSimulator(object):
                     self.base_matrix[-1].append('tower')
                 elif col == 'I':
                     self.base_matrix[-1].append('ice')
+                elif col == 'B':
+                    self.base_matrix[-1].append('box')
                 elif col == '.':
                     self.base_matrix[-1].append('empty')
                 elif col == 'S':

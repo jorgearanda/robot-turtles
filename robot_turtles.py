@@ -25,7 +25,7 @@ usage = """Usage: robot_turtles.py [-h] --scenario <scenario> [--population <pop
 turtle = TurtleSimulator(200)
 
 pset = gp.PrimitiveSet('MAIN', 0)
-pset.addPrimitive(turtle.if_tower_next, 2)
+pset.addPrimitive(turtle.if_blocked_next, 2)
 pset.addPrimitive(turtle.if_gem_ahead, 2)
 pset.addPrimitive(turtle.if_ice_in_sight, 2)
 pset.addPrimitive(primitives.seq2, 2)
