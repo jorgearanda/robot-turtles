@@ -1,6 +1,7 @@
-## Robot Turtles - genetic programming sandbox
+## Robot Turtles - genetic programming toy example
 
 This is a toy example of genetic programming inspired by the [robot turtles](http://www.robotturtles.com/) boardgame and using the [DEAP](https://github.com/DEAP) Python library.
+It also uses some of the structure of the Artificial Ant problem as implemented in the [DEAP GP examples](https://github.com/DEAP/deap/blob/master/examples/gp/ant.py).
 
 ### Installation
 
